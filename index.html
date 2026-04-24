@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Phoenix Accounting Solutions PNG — simple accounting for SMEs in Papua New Guinea" />
+  <title>Phoenix Accounting Solutions PNG</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="app-header" id="appHeader" hidden>
+    <div class="brand">
+      <div class="brand-mark">P</div>
+      <div>
+        <div class="brand-title">Phoenix Accounting Solutions</div>
+        <div class="brand-sub">Papua New Guinea</div>
+      </div>
+    </div>
+    <nav class="nav" id="mainNav"></nav>
+    <div class="header-right">
+      <span id="whoami" class="whoami"></span>
+      <button id="logoutBtn" class="btn btn-ghost">Log out</button>
+    </div>
+  </header>
+
+  <main id="view" class="view"></main>
+
+  <!-- ===== Templates ===== -->
+
+  <template id="tpl-auth">
+    <section class="auth-wrap">
+      <div class="auth-card">
+        <div class="brand brand-large">
+          <div class="brand-mark">P</div>
+          <div>
+            <div class="brand-title">Phoenix Accounting</div>
+            <div class="brand-sub">SME Accounting for Papua New Guinea</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab active" data-tab="login">Log in</button>
+          <button class="tab" data-tab="register">Register</button>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <label>Email<input type="email" name="email" required autocomplete="username" /></label>
+          <label>Password<input type="password" name="password" required autocomplete="current-password" /></label>
+          <button type="submit" class="btn btn-primary">Log in</button>
+          <div class="form-error" data-role="error"></div>
+          <div class="demo-hint">
+            Demo accounts:
+            <ul>
+              <li><code>admin@phoenix.pg</code> / <code>admin123</code> (Admin)</li>
+              <li><code>sme@demo.pg</code> / <code>demo123</code> (SME — seeded data)</li>
+            </ul>
+          </div>
+        </form>
+
+        <form id="registerForm" class="auth-form" hidden>
+          <label>Business name<input type="text" name="businessName" required /></label>
+          <label>Owner full name<input type="text" name="ownerName" required /></label>
+          <label>Email<input type="email" name="email" required autocomplete="username" /></label>
+          <label>Phone<input type="tel" name="phone" placeholder="+675 ..." /></label>
+          <label>Province
+            <select name="province">
+              <option>National Capital District</option>
+              <option>Morobe</option>
+              <option>Western Highlands</option>
+              <option>East New Britain</option>
+              <option>Eastern Highlands</option>
+              <option>Madang</option>
+              <option>Enga</option>
+              <option>Southern Highlands</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Password<input type="password" name="password" required minlength="6" autocomplete="new-password" /></label>
+          <button type="submit" class="btn btn-primary">Create account</button>
+          <div class="form-error" data-role="error"></div>
+        </form>
+      </div>
+      <footer class="auth-foot">Prototype build · Data stored locally in your browser</footer>
+    </section>
+  </template>
+
+  <template id="tpl-sme-dashboard">
+    <section class="page">
+      <div class="page-head">
+        <h1>Dashboard</h1>
+        <div class="period-picker">
+          <label>Period
+            <select id="periodSelect">
+              <option value="this_month">This month</option>
+              <option value="last_month">Last month</option>
+              <option value="this_year">This year</option>
+              <option value="all">All time</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="cards">
+        <div class="stat-card stat-income">
+          <div class="stat-label">Income</div>
+          <div class="stat-value" id="statIncome">K0.00</div>
+        </div>
+        <div class="stat-card stat-expense">
+          <div class="stat-label">Expenses</div>
+          <div class="stat-value" id="statExpense">K0.00</div>
+        </div>
+        <div class="stat-card stat-profit">
+          <div class="stat-label">Profit / Loss</div>
+          <div class="stat-value" id="statProfit">K0.00</div>
+        </div>
+        <div class="stat-card stat-count">
+          <div class="stat-label">Transactions</div>
+          <div class="stat-value" id="statCount">0</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Recent transactions</h2>
+            <a href="#/transactions" class="link">View all →</a>
+          </div>
+          <div id="recentTxn" class="table-wrap"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Expenses by category</h2>
+          </div>
+          <div id="catBreakdown" class="cat-list"></div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-sme-transactions">
+    <section class="page">
+      <div class="page-head">
+        <h1>Income &amp; Expenses</h1>
+        <button class="btn btn-primary" id="addTxnBtn">+ New transaction</button>
+      </div>
+
+      <div class="filters">
+        <label>Type
+          <select id="filterType">
+            <option value="">All</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </label>
+        <label>Category
+          <select id="filterCategory"><option value="">All</option></select>
+        </label>
+        <label>Search
+          <input type="search" id="filterSearch" placeholder="Description..." />
+        </label>
+      </div>
+
+      <div id="txnTable" class="table-wrap"></div>
+    </section>
+  </template>
+
+  <template id="tpl-sme-reports">
+    <section class="page">
+      <div class="page-head"><h1>Monthly Reports</h1></div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Profit &amp; Loss by Month</h2>
+          <button id="printReport" class="btn btn-ghost">Print / Save PDF</button>
+        </div>
+        <div id="monthlyTable" class="table-wrap"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Monthly chart</h2></div>
+        <div id="monthlyChart" class="bar-chart"></div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-sme-payroll">
+    <section class="page">
+      <div class="page-head">
+        <h1>Payroll</h1>
+        <button class="btn btn-primary" id="addPayrollBtn">+ Record pay run</button>
+      </div>
+      <div id="payrollTable" class="table-wrap"></div>
+    </section>
+  </template>
+
+  <template id="tpl-sme-help">
+    <section class="page">
+      <div class="page-head"><h1>Request accounting help</h1></div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h2>New request</h2></div>
+          <form id="helpForm" class="stacked-form">
+            <label>Topic
+              <select name="topic" required>
+                <option>Tax filing</option>
+                <option>Bookkeeping review</option>
+                <option>Payroll setup</option>
+                <option>GST / IRC</option>
+                <option>Financial statements</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>Describe your question
+              <textarea name="message" rows="5" required></textarea>
+            </label>
+            <label>Priority
+              <select name="priority">
+                <option value="low">Low</option>
+                <option value="normal" selected>Normal</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Send request</button>
+          </form>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Your requests</h2></div>
+          <div id="helpList" class="help-list"></div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-admin-clients">
+    <section class="page">
+      <div class="page-head"><h1>SME Clients</h1></div>
+      <div class="filters">
+        <label>Search
+          <input type="search" id="clientSearch" placeholder="Business, owner, email..." />
+        </label>
+      </div>
+      <div id="clientTable" class="table-wrap"></div>
+    </section>
+  </template>
+
+  <template id="tpl-admin-client-detail">
+    <section class="page">
+      <div class="page-head">
+        <a href="#/admin/clients" class="link">← Back to clients</a>
+      </div>
+      <div id="clientDetail"></div>
+    </section>
+  </template>
+
+  <template id="tpl-admin-payments">
+    <section class="page">
+      <div class="page-head">
+        <h1>Payments</h1>
+        <button class="btn btn-primary" id="addPaymentBtn">+ Record payment</button>
+      </div>
+      <div id="paymentsTable" class="table-wrap"></div>
+    </section>
+  </template>
+
+  <template id="tpl-admin-messages">
+    <section class="page">
+      <div class="page-head"><h1>Client messages &amp; help requests</h1></div>
+      <div id="adminMessagesList"></div>
+    </section>
+  </template>
+
+  <!-- Modal root -->
+  <div id="modalRoot" class="modal-root" hidden></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sme.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
