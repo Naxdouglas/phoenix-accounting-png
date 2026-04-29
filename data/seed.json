@@ -1,0 +1,102 @@
+{
+  "meta": { "createdAt": "2025-01-01T00:00:00.000Z", "version": 1 },
+  "users": [
+    {
+      "id": "user_admin_001",
+      "role": "admin",
+      "email": "admin@phoenix.pg",
+      "ownerName": "Phoenix Admin",
+      "businessName": "Phoenix Accounting Solutions PNG",
+      "phone": "+675 000 0001",
+      "province": "National Capital District",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "salt": "admin_seed_salt",
+      "passwordHash": "ca112925d060b19b33870e6ed25a5882b11088ddbad368111b15855c24a5f543"
+    },
+    {
+      "id": "user_sme_001",
+      "role": "sme",
+      "email": "sme@demo.pg",
+      "ownerName": "Demo Owner",
+      "businessName": "Port Moresby Trading Co.",
+      "phone": "+675 123 4567",
+      "province": "National Capital District",
+      "createdAt": "2025-01-10T00:00:00.000Z",
+      "salt": "sme_seed_salt",
+      "passwordHash": "aa0f1459600fb191f0b017dc6d314b49d512bf7cedb1d5423cca1e283046edbb"
+    }
+  ],
+  "transactions": [
+    { "id": "txn_001", "userId": "user_sme_001", "type": "income",  "date": "2025-02-03", "category": "Sales",             "description": "Shop sales - week 1",      "amount": 2450.00, "receiptId": null, "createdAt": "2025-02-03T09:00:00.000Z" },
+    { "id": "txn_002", "userId": "user_sme_001", "type": "expense", "date": "2025-02-05", "category": "Inventory",         "description": "Restock - canned goods",   "amount": 1120.50, "receiptId": null, "createdAt": "2025-02-05T09:00:00.000Z" },
+    { "id": "txn_003", "userId": "user_sme_001", "type": "expense", "date": "2025-02-07", "category": "Transport",         "description": "Delivery truck fuel",      "amount": 180.00,  "receiptId": null, "createdAt": "2025-02-07T09:00:00.000Z" },
+    { "id": "txn_004", "userId": "user_sme_001", "type": "income",  "date": "2025-02-12", "category": "Sales",             "description": "Shop sales - week 2",      "amount": 2890.00, "receiptId": null, "createdAt": "2025-02-12T09:00:00.000Z" },
+    { "id": "txn_005", "userId": "user_sme_001", "type": "expense", "date": "2025-02-15", "category": "Rent",              "description": "Shop rent - February",     "amount": 800.00,  "receiptId": null, "createdAt": "2025-02-15T09:00:00.000Z" },
+    { "id": "txn_006", "userId": "user_sme_001", "type": "expense", "date": "2025-02-20", "category": "Utilities",         "description": "PNG Power bill",           "amount": 210.75,  "receiptId": null, "createdAt": "2025-02-20T09:00:00.000Z" },
+    { "id": "txn_007", "userId": "user_sme_001", "type": "income",  "date": "2025-03-01", "category": "Services",          "description": "Catering job - wedding",   "amount": 3600.00, "receiptId": null, "createdAt": "2025-03-01T09:00:00.000Z" },
+    { "id": "txn_008", "userId": "user_sme_001", "type": "expense", "date": "2025-03-03", "category": "Supplies",          "description": "Kitchen supplies",         "amount": 420.00,  "receiptId": null, "createdAt": "2025-03-03T09:00:00.000Z" },
+    { "id": "txn_009", "userId": "user_sme_001", "type": "income",  "date": "2025-03-14", "category": "Sales",             "description": "Market day takings",       "amount": 1540.00, "receiptId": null, "createdAt": "2025-03-14T09:00:00.000Z" },
+    { "id": "txn_010", "userId": "user_sme_001", "type": "expense", "date": "2025-03-18", "category": "Salaries & wages",  "description": "Staff wages - fortnight",  "amount": 1600.00, "receiptId": null, "createdAt": "2025-03-18T09:00:00.000Z" },
+    { "id": "txn_011", "userId": "user_sme_001", "type": "expense", "date": "2025-03-22", "category": "Taxes & licences",  "description": "Trading licence renewal",  "amount": 350.00,  "receiptId": null, "createdAt": "2025-03-22T09:00:00.000Z" },
+    { "id": "txn_012", "userId": "user_sme_001", "type": "income",  "date": "2025-03-28", "category": "Sales",             "description": "End of month takings",     "amount": 2100.00, "receiptId": null, "createdAt": "2025-03-28T09:00:00.000Z" }
+  ],
+  "receipts": [],
+  "payroll": [
+    { "id": "pay_001", "userId": "user_sme_001", "employeeName": "Mary Kila", "position": "Shop assistant", "payDate": "2025-03-18", "gross": 800.00, "tax": 80.00, "net": 720.00, "notes": "Fortnight 5", "createdAt": "2025-03-18T09:00:00.000Z" },
+    { "id": "pay_002", "userId": "user_sme_001", "employeeName": "John Aisi",  "position": "Driver",         "payDate": "2025-03-18", "gross": 800.00, "tax": 80.00, "net": 720.00, "notes": "Fortnight 5", "createdAt": "2025-03-18T09:00:00.000Z" }
+  ],
+  "helpRequests": [
+    {
+      "id": "help_001",
+      "userId": "user_sme_001",
+      "topic": "GST / IRC",
+      "message": "How often should I be filing GST returns for a small trading business?",
+      "priority": "normal",
+      "status": "in_progress",
+      "reply": "Small businesses with turnover under the threshold can file quarterly. We'll confirm your bracket on our next call.",
+      "createdAt": "2025-03-15T06:30:00.000Z"
+    }
+  ],
+  "payments": [
+    { "id": "pmt_001", "userId": "user_sme_001", "clientName": "Port Moresby Trading Co.", "description": "Monthly accounting fee - February", "date": "2025-02-28", "amount": 250.00, "status": "paid",  "createdAt": "2025-02-28T09:00:00.000Z", "paidAt": "2025-03-02T09:00:00.000Z" },
+    { "id": "pmt_002", "userId": "user_sme_001", "clientName": "Port Moresby Trading Co.", "description": "Monthly accounting fee - March",    "date": "2025-03-31", "amount": 250.00, "status": "due",   "createdAt": "2025-03-31T09:00:00.000Z" }
+  ],
+  "messages": [],
+  "statements": [
+    {
+      "id": "stmt_001",
+      "type": "income_statement",
+      "userId": "user_sme_001",
+      "businessName": "Port Moresby Trading Co.",
+      "periodStart": "2025-02-01",
+      "periodEnd": "2025-03-31",
+      "periodLabel": "Two months ended 31 March 2025",
+      "status": "published",
+      "createdBy": "admin",
+      "createdAt": "2025-04-05T08:00:00.000Z",
+      "updatedAt": "2025-04-05T08:00:00.000Z",
+      "publishedAt": "2025-04-05T08:00:00.000Z",
+      "attachment": null,
+      "notes": "Prepared from your uploaded transactions. Please review and let us know if anything is missing.",
+      "data": {
+        "revenue": [
+          { "label": "Sales revenue",   "amount": 8980.00 },
+          { "label": "Service revenue", "amount": 3600.00 }
+        ],
+        "cogs": [
+          { "label": "Inventory purchases", "amount": 1120.50 }
+        ],
+        "operating_expenses": [
+          { "label": "Rent",              "amount": 800.00 },
+          { "label": "Salaries & wages",  "amount": 1600.00 },
+          { "label": "Utilities",         "amount": 210.75 },
+          { "label": "Transport",         "amount": 180.00 },
+          { "label": "Supplies",          "amount": 420.00 },
+          { "label": "Taxes & licences",  "amount": 350.00 }
+        ],
+        "other_income":   [],
+        "other_expenses": []
+      }
+    }
+  ]
+}
