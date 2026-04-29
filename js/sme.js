@@ -244,6 +244,20 @@
     const tpl = document.getElementById('tpl-sme-reports').content.cloneNode(true);
     view.appendChild(tpl);
 
+    // Tab switching
+    const tabs = view.querySelectorAll('.report-tabs .tab');
+    const panes = view.querySelectorAll('[data-rpane]');
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.toggle('active', x === t));
+      panes.forEach(p => { p.hidden = p.dataset.rpane !== t.dataset.rtab; });
+    }));
+
+    // Statements (published only) for this SME
+    const statements = Store.listStatements(user.id, { publishedOnly: true });
+    const stmtList = view.querySelector('#statementsList');
+    stmtList.innerHTML = Statements.renderList(statements);
+    Statements.attachListHandlers(stmtList);
+
     const txns = Store.listTransactions(user.id);
     const byMonth = {};
     txns.forEach(t => {

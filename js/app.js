@@ -17,6 +17,7 @@
     ],
     admin: [
       { hash: '#/admin/clients', label: 'Clients', render: Admin.renderClients },
+      { hash: '#/admin/statements', label: 'Statements', render: Admin.renderStatements },
       { hash: '#/admin/payments', label: 'Payments', render: Admin.renderPayments },
       { hash: '#/admin/messages', label: 'Messages', render: Admin.renderMessages }
     ]
@@ -126,12 +127,12 @@
   }
 
   // Modal helper
-  App.openModal = function ({ title, bodyHtml, footer = [], onOpen }) {
+  App.openModal = function ({ title, bodyHtml, footer = [], onOpen, size }) {
     const root = modalRoot();
     root.hidden = false;
     root.innerHTML = '';
     const modal = document.createElement('div');
-    modal.className = 'modal';
+    modal.className = 'modal' + (size === 'wide' ? ' modal-wide' : '');
     modal.innerHTML = `
       <div class="modal-head"><h3>${Utils.escapeHtml(title || '')}</h3>
         <button class="btn btn-ghost btn-sm" data-close aria-label="Close">✕</button>

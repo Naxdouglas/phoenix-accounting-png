@@ -12,6 +12,7 @@
     if (raw) {
       try {
         db = JSON.parse(raw);
+        migrate();
         return db;
       } catch (e) {
         console.warn('Failed to parse stored DB, reseeding.', e);
@@ -26,6 +27,7 @@
       console.warn('Seed fetch failed, using empty DB.', e);
       db = emptyDb();
     }
+    migrate();
     persist();
     return db;
   }
@@ -39,8 +41,15 @@
       helpRequests: [],
       payments: [],
       messages: [],
+      statements: [],
       meta: { createdAt: new Date().toISOString() }
     };
+  }
+
+  // Migrate older DBs missing newer collections
+  function migrate() {
+    if (!db) return;
+    if (!db.statements) db.statements = [];
   }
 
   function persist() {
@@ -182,6 +191,34 @@
   Store.deletePayment = function (id) {
     const idx = db.payments.findIndex(p => p.id === id);
     if (idx >= 0) { db.payments.splice(idx, 1); persist(); }
+  };
+
+  // ----- Statements -----
+  Store.listStatements = function (userId, opts) {
+    let items = userId
+      ? db.statements.filter(s => s.userId === userId)
+      : db.statements.slice();
+    if (opts && opts.publishedOnly) items = items.filter(s => s.status === 'published');
+    return items.sort((a, b) => (b.periodEnd || '').localeCompare(a.periodEnd || '') || b.createdAt.localeCompare(a.createdAt));
+  };
+  Store.findStatement = function (id) {
+    return db.statements.find(s => s.id === id) || null;
+  };
+  Store.addStatement = function (s) {
+    db.statements.push(s);
+    persist();
+    return s;
+  };
+  Store.updateStatement = function (id, updates) {
+    const s = db.statements.find(s => s.id === id);
+    if (!s) return null;
+    Object.assign(s, updates, { updatedAt: new Date().toISOString() });
+    persist();
+    return s;
+  };
+  Store.deleteStatement = function (id) {
+    const idx = db.statements.findIndex(s => s.id === id);
+    if (idx >= 0) { db.statements.splice(idx, 1); persist(); }
   };
 
   // ----- Messages -----

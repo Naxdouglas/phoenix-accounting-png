@@ -61,5 +61,42 @@
     { "id": "pmt_001", "userId": "user_sme_001", "clientName": "Port Moresby Trading Co.", "description": "Monthly accounting fee - February", "date": "2025-02-28", "amount": 250.00, "status": "paid",  "createdAt": "2025-02-28T09:00:00.000Z", "paidAt": "2025-03-02T09:00:00.000Z" },
     { "id": "pmt_002", "userId": "user_sme_001", "clientName": "Port Moresby Trading Co.", "description": "Monthly accounting fee - March",    "date": "2025-03-31", "amount": 250.00, "status": "due",   "createdAt": "2025-03-31T09:00:00.000Z" }
   ],
-  "messages": []
+  "messages": [],
+  "statements": [
+    {
+      "id": "stmt_001",
+      "type": "income_statement",
+      "userId": "user_sme_001",
+      "businessName": "Port Moresby Trading Co.",
+      "periodStart": "2025-02-01",
+      "periodEnd": "2025-03-31",
+      "periodLabel": "Two months ended 31 March 2025",
+      "status": "published",
+      "createdBy": "admin",
+      "createdAt": "2025-04-05T08:00:00.000Z",
+      "updatedAt": "2025-04-05T08:00:00.000Z",
+      "publishedAt": "2025-04-05T08:00:00.000Z",
+      "attachment": null,
+      "notes": "Prepared from your uploaded transactions. Please review and let us know if anything is missing.",
+      "data": {
+        "revenue": [
+          { "label": "Sales revenue",   "amount": 8980.00 },
+          { "label": "Service revenue", "amount": 3600.00 }
+        ],
+        "cogs": [
+          { "label": "Inventory purchases", "amount": 1120.50 }
+        ],
+        "operating_expenses": [
+          { "label": "Rent",              "amount": 800.00 },
+          { "label": "Salaries & wages",  "amount": 1600.00 },
+          { "label": "Utilities",         "amount": 210.75 },
+          { "label": "Transport",         "amount": 180.00 },
+          { "label": "Supplies",          "amount": 420.00 },
+          { "label": "Taxes & licences",  "amount": 350.00 }
+        ],
+        "other_income":   [],
+        "other_expenses": []
+      }
+    }
+  ]
 }

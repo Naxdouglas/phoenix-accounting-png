@@ -165,17 +165,34 @@
 
   <template id="tpl-sme-reports">
     <section class="page">
-      <div class="page-head"><h1>Monthly Reports</h1></div>
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Profit &amp; Loss by Month</h2>
-          <button id="printReport" class="btn btn-ghost">Print / Save PDF</button>
-        </div>
-        <div id="monthlyTable" class="table-wrap"></div>
+      <div class="page-head"><h1>Reports &amp; Statements</h1></div>
+      <div class="tabs report-tabs">
+        <button class="tab active" data-rtab="statements">Statements from Phoenix</button>
+        <button class="tab" data-rtab="auto">Auto P&amp;L (from your records)</button>
       </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Monthly chart</h2></div>
-        <div id="monthlyChart" class="bar-chart"></div>
+
+      <div data-rpane="statements">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Income Statement, Balance Sheet &amp; Cash Flow</h2>
+          </div>
+          <div id="statementsList"></div>
+          <div class="stmt-foot">Statements are prepared by your Phoenix accountant from the records you upload. Click any statement to view, print or download.</div>
+        </div>
+      </div>
+
+      <div data-rpane="auto" hidden>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Profit &amp; Loss by Month</h2>
+            <button id="printReport" class="btn btn-ghost">Print / Save PDF</button>
+          </div>
+          <div id="monthlyTable" class="table-wrap"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Monthly chart</h2></div>
+          <div id="monthlyChart" class="bar-chart"></div>
+        </div>
       </div>
     </section>
   </template>
@@ -249,6 +266,39 @@
     </section>
   </template>
 
+  <template id="tpl-admin-statements">
+    <section class="page">
+      <div class="page-head">
+        <h1>All statements</h1>
+        <button class="btn btn-primary" id="addStatementGlobalBtn">+ New statement</button>
+      </div>
+      <div class="filters">
+        <label>Client
+          <select id="filterStmtClient"><option value="">All clients</option></select>
+        </label>
+        <label>Type
+          <select id="filterStmtType">
+            <option value="">All types</option>
+            <option value="income_statement">Income Statement</option>
+            <option value="balance_sheet">Balance Sheet</option>
+            <option value="cash_flow">Cash Flow</option>
+          </select>
+        </label>
+        <label>Status
+          <select id="filterStmtStatus">
+            <option value="">All</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </label>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Statements</h2></div>
+        <div id="adminStatementsList"></div>
+      </div>
+    </section>
+  </template>
+
   <template id="tpl-admin-payments">
     <section class="page">
       <div class="page-head">
@@ -272,6 +322,7 @@
   <script src="js/utils.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/statements.js"></script>
   <script src="js/sme.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/app.js"></script>

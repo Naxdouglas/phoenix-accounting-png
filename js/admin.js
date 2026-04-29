@@ -63,6 +63,7 @@
     const payroll = Store.listPayroll(client.id);
     const payments = Store.listPayments(client.id);
     const helpReqs = Store.listHelpRequests(client.id);
+    const statements = Store.listStatements(client.id);
     const initial = client.businessName.charAt(0).toUpperCase();
 
     wrap.innerHTML = `
@@ -80,6 +81,14 @@
         <div class="stat-card stat-expense"><div class="stat-label">Expenses</div><div class="stat-value">${Utils.formatKina(expense)}</div></div>
         <div class="stat-card stat-profit"><div class="stat-label">Profit / Loss</div><div class="stat-value" style="color:${income - expense < 0 ? 'var(--danger)' : 'var(--success)'}">${Utils.formatKina(income - expense)}</div></div>
         <div class="stat-card stat-count"><div class="stat-label">Transactions</div><div class="stat-value">${txns.length}</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Financial statements</h2>
+          <button class="btn btn-sm btn-primary" id="addStatementBtn">+ New statement</button>
+        </div>
+        <div id="statementsList">${Statements.renderList(statements)}</div>
       </div>
 
       <div class="panel">
@@ -107,14 +116,24 @@
       </div>
     `;
 
-    const addPaymentBtn = wrap.querySelector('#addClientPayment');
-    if (addPaymentBtn) addPaymentBtn.addEventListener('click', () => openPaymentModal(client, () => Admin.renderClientDetail.refresh && Admin.renderClientDetail.refresh(clientId)));
-    attachAdminHelpHandlers(wrap);
-    attachPaymentHandlers(wrap, () => {
-      // re-render client detail
+    const refreshClient = () => {
       view.innerHTML = '';
       Admin.renderClientDetail(view, clientId);
+    };
+
+    const addPaymentBtn = wrap.querySelector('#addClientPayment');
+    if (addPaymentBtn) addPaymentBtn.addEventListener('click', () => openPaymentModal(client, refreshClient));
+    const addStmtBtn = wrap.querySelector('#addStatementBtn');
+    if (addStmtBtn) addStmtBtn.addEventListener('click', () => Statements.openEditor(client, null, refreshClient));
+
+    // Wire statement viewer with admin controls
+    Statements.attachListHandlers(wrap.querySelector('#statementsList'), {
+      adminControls: true,
+      onChange: refreshClient
     });
+
+    attachAdminHelpHandlers(wrap);
+    attachPaymentHandlers(wrap, refreshClient);
   };
 
   function renderAdminTxnTable(list) {
@@ -266,6 +285,81 @@
       ]
     });
   }
+
+  // ----- All statements page -----
+  Admin.renderStatements = function (view) {
+    const tpl = document.getElementById('tpl-admin-statements').content.cloneNode(true);
+    view.appendChild(tpl);
+
+    const clientFilter = view.querySelector('#filterStmtClient');
+    Store.listSmeUsers().forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id; opt.textContent = u.businessName;
+      clientFilter.appendChild(opt);
+    });
+    const typeFilter = view.querySelector('#filterStmtType');
+    const statusFilter = view.querySelector('#filterStmtStatus');
+    [clientFilter, typeFilter, statusFilter].forEach(el => el.addEventListener('change', refresh));
+
+    view.querySelector('#addStatementGlobalBtn').addEventListener('click', () => {
+      const smes = Store.listSmeUsers();
+      if (!smes.length) { alert('No SME clients yet.'); return; }
+      const bodyHtml = `
+        <form id="pickClient" class="stacked-form">
+          <label>Client to prepare statement for
+            <select name="clientId" required>
+              ${smes.map(u => `<option value="${u.id}">${Utils.escapeHtml(u.businessName)} — ${Utils.escapeHtml(u.ownerName)}</option>`).join('')}
+            </select>
+          </label>
+        </form>`;
+      App.openModal({
+        title: 'New statement',
+        bodyHtml,
+        footer: [
+          { label: 'Cancel', close: true },
+          { label: 'Next', primary: true, onClick: (modal) => {
+            const clientId = modal.querySelector('select[name=clientId]').value;
+            const client = Store.findUser(clientId);
+            App.closeModal();
+            Statements.openEditor(client, null, refresh);
+            return false;
+          }}
+        ]
+      });
+    });
+
+    function refresh() {
+      let list = Store.listStatements();
+      if (clientFilter.value) list = list.filter(s => s.userId === clientFilter.value);
+      if (typeFilter.value) list = list.filter(s => s.type === typeFilter.value);
+      if (statusFilter.value) list = list.filter(s => s.status === statusFilter.value);
+      // augment with client column
+      const wrap = view.querySelector('#adminStatementsList');
+      if (!list.length) { wrap.innerHTML = '<div class="empty">No statements match these filters.</div>'; return; }
+      const rows = list.map(s => {
+        const schema = Statements.schema(s.type);
+        const total = schema.totalLabel
+          ? Statements.signedSum(schema, s.data || {}, schema.totalFrom) + (schema.addExtra ? Number((s.data || {})[schema.addExtra] || 0) : 0)
+          : (schema.balanceCheck ? Statements.signedSum(schema, s.data || {}, schema.balanceCheck.leftFrom) : null);
+        const totalLabel = schema.totalLabel || (schema.balanceCheck ? schema.balanceCheck.leftLabel : '');
+        const period = s.periodLabel || (s.periodEnd ? Utils.formatDate(s.periodEnd) : '');
+        return `<tr>
+          <td><strong>${Utils.escapeHtml(s.businessName || '')}</strong></td>
+          <td><a href="#" data-view-statement="${s.id}">${Utils.escapeHtml(schema.shortTitle)}</a></td>
+          <td>${Utils.escapeHtml(period)}</td>
+          <td class="num">${total != null ? `<span style="color:var(--muted); font-size:12px">${Utils.escapeHtml(totalLabel)}</span><br>${Utils.formatKina(total)}` : ''}</td>
+          <td><span class="pill pill-${s.status}">${s.status}</span></td>
+          <td>${s.attachment ? '📎' : ''}</td>
+          <td>${Utils.formatDate(s.updatedAt || s.createdAt)}</td>
+        </tr>`;
+      }).join('');
+      wrap.innerHTML = `<div class="table-wrap"><table class="data">
+        <thead><tr><th>Client</th><th>Type</th><th>Period</th><th class="num">Total</th><th>Status</th><th></th><th>Updated</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>`;
+      Statements.attachListHandlers(wrap, { adminControls: true, onChange: refresh });
+    }
+    refresh();
+  };
 
   // ----- Payments page -----
   Admin.renderPayments = function (view) {
